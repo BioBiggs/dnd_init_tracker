@@ -16,7 +16,8 @@ class NPC:
         self.attack = ""
         self.init = 0
         self.HP = 0
-        
+        self.AC = 10
+    ##Randomly generates stats    
     def set_stats(self):
         self.stat_list = []
         for i in range(0,6):
@@ -29,41 +30,55 @@ class NPC:
     def print_info(self):
         return(str(self.name + ": " + str(self.stats)) +" " + self.attack + " " +str(self.HP))
 
+    
+##PCs only need a name and initiative 
 class PC:
     def __init__(self, name, init):
         self.name = name
         self.init = init
         self.HP = "NA"
-        
+##The lists are to keep the classes        
 mons = []
 mon_buttons =[]
 encounter_mons=[]
 
+
+#def random_NPC():
+    
+
+
 def add_to_mons():
+    ##Randomly generates stats for an NPC
     mon_name = add_mon_entry.get()
     mons.append(NPC(str(mon_name)))
+    ##Removes text from the entry box
     add_mon_entry.delete(0,END)
     ##Resets text box
     mon_box.delete(1.0, END)
     ##Prints with new line
     for i in mons:
-        mon_box.insert(END, i.print_info() + '\n')
+        mon_box.insert(END, i.print_info() +'\n')
     make_mon_buttons()
 
-
+def i_need_an_npc():
+    file=open("names.txt","r")
+    
 
 def read_in_mons():
-    file = open("demo_monsters.txt","r")
+    file = read_mons_entry.get()
+    file = open(file,"r")
     lines = file.readlines()
     for i in lines:
         i=str(i)
         i = i.split()
         to_add_to_mons = NPC(i[0])
-        to_add_to_mons.stats = i[1:6]
+        to_add_to_mons.stats = i[1:7]
         to_add_to_mons.attack = i[7]
         to_add_to_mons.HP = i[8]
+        to_add_to_mons.AC = i[9]
         mons.append(to_add_to_mons)
     mon_box.delete(1.0, END)
+    file.close()
     ##Prints with new line
     for i in mons:
         mon_box.insert(END, i.print_info() + '\n')
@@ -71,7 +86,7 @@ def read_in_mons():
 
 
 
-
+##Dynamically generates buttons for each entry in the mons list -  binds them to the variable using lambda
 def make_mon_buttons():
     for i in mon_buttons:
         i.destroy()
@@ -101,7 +116,7 @@ def add_to_encounter(to_add_to_encounter):
     encounter_box.delete(1.0, END)
     ##Prints with new line 
     for i in encounter_mons:
-        encounter_box.insert(END, i.print_info() + '\n')
+        encounter_box.insert(END, i.print_info() + " AC: " + str(i.AC) +'\n')
 
         
 
@@ -129,7 +144,7 @@ def clear_encounters():
 
 ###adding text box
 init_box = Text(top, width=30)
-init_box.place(x=570,y=60)
+init_box.place(x=600,y=60)
 ##Empty list for storing init
 init=[]
 def add_to_init():
@@ -168,18 +183,18 @@ clear_encounter_button = Button(top, text="Clear Encounter", command=clear_encou
 clear_encounter_button.place(x=830, y=900)
 
 
-initiative_tracker_label = Label(top, text="Add to initiative (Name, initiative): ")
-initiative_tracker_label.place(x=570,y=30)
+initiative_tracker_label = Label(top, text="Name & initiative: ")
+initiative_tracker_label.place(x=600,y=30)
 
 initiative_tracker_entry = Entry(top, bd =5)
-initiative_tracker_entry.place(x=760, y=30)
+initiative_tracker_entry.place(x=720, y=30)
 
 init_track_button = Button(top, text = "Add to initiative", command=add_to_init)
-init_track_button.place(x= 900, y=30)
+init_track_button.place(x= 850, y=30)
 
 
 clear_init = Button(top, text = "Clear initiative", command=clear_the_init)
-clear_init.place(x=570, y=450)
+clear_init.place(x=600, y=450)
 
 add_mon_label = Label(top, text="Add a Monster: ")
 add_mon_label.place(x=10, y=30)
@@ -190,6 +205,16 @@ add_mon_entry.place(x=150,y=30)
 add_mon_button = Button(top, text="Add Monster", command = add_to_mons)
 add_mon_button.place(x=290, y=30)
 
+read_mons_button = Button(top, text="Read in Mons", command =read_in_mons)
+read_mons_button.place(x=290, y=0)
+
+read_mons_entry = Entry(top, bd=5)
+read_mons_entry.place(x=150,y=0)
+
+read_mons_label = Label(top,text="File to read in:")
+read_mons_label.place(x=10,y=0)
+
+
 
 stats_label = Label(top, text="Str, Dex, Con, Int, Wis, Char")
 stats_label.place(x=45, y=60)
@@ -199,10 +224,6 @@ mon_box.place(x=10,y=90)
 
 clear_mon_button = Button(top, text="Clear Monsters", command=clear_mons)
 clear_mon_button.place(x=10, y=480)
-
-
-read_in_mons()
-
 
 
 top.mainloop()
